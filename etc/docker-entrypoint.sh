@@ -28,7 +28,9 @@ sudo -u postgres psql -d hmdm -c "UPDATE groups SET name = 'Default' WHERE id = 
 sudo -u postgres psql -d hmdm -c "UPDATE configurations SET name = 'Default', description = 'Basic configuration for all devices' WHERE id = '1';"
 
 # Change branding to Jfc Technologies MDM
-sed -i "s/'app.name': 'Headwind MDM'/'app.name': 'Jfc Technologies MDM'/g" /usr/local/tomcat/webapps/hmdm/localization/en_US.js
+sed -i "s/'app.name': 'Headwind MDM'/'app.name': 'Jfc Technologies MDM'/g" /usr/local/tomcat/webapps/hmdm/localization/*.js
+sed -i 's/"app.name": \x27Headwind MDM\x27/"app.name": \x27Jfc Technologies MDM\x27/g' /usr/local/tomcat/webapps/hmdm/localization/*.js
+sed -i "s/'app.name':\"Headwind MDM\"/'app.name':\"Jfc Technologies MDM\"/g" /usr/local/tomcat/webapps/hmdm/localization/*.js
 sudo -u postgres psql -d hmdm -c "UPDATE customers SET name = 'Jfc Technologies MDM' WHERE id = 1;"
 
 catalina.sh stop
