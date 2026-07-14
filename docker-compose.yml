@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
     mdm:
+        build: .
         image: hwind/hmdm
         ports:
             - 8080:8080

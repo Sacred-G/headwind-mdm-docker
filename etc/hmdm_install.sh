@@ -4,7 +4,7 @@
 # Tested on Ubuntu Linux 18.04 LTS, 19.10
 #
 REPOSITORY_BASE=https://h-mdm.com/files
-CLIENT_VERSION=3.35
+CLIENT_VERSION=5.26
 DEFAULT_SQL_HOST=localhost
 DEFAULT_SQL_PORT=5432
 DEFAULT_SQL_BASE=hmdm
@@ -24,6 +24,16 @@ TOMCAT_USER=$(ls -ld $TOMCAT_HOME/webapps | awk '{print $3}')
 
 LANGUAGE=en
 TOMCAT_HOME=/usr/local/tomcat
+LOCATION="${HMDM_LOCATION:-$DEFAULT_LOCATION}"
+SMTP_HOST=""
+SMTP_PORT="25"
+SMTP_SSL="0"
+SMTP_STARTTLS="0"
+SMTP_USERNAME=""
+SMTP_PASSWORD=""
+SMTP_FROM=""
+
+
 
 
 if [ ! -z "$HMDM_SQL_HOST" ]; then
@@ -122,7 +132,11 @@ fi
 #fi
 
 CLIENT_APK="hmdm-$CLIENT_VERSION-$CLIENT_VARIANT.apk"
-LANGUAGE="$DEFAULT_HMDM_LANGUAGE"
+if [ ! -z "$HMDM_LANGUAGE" ]; then
+    LANGUAGE="$HMDM_LANGUAGE"
+elif [ -z "$LANGUAGE" ]; then
+    LANGUAGE="en"
+fi
 
 echo "PostgreSQL database setup"
 echo "========================="
@@ -238,7 +252,7 @@ if [ ! -d $TOMCAT_CONFIG_PATH ]; then
     chown root:$TOMCAT_USER $TOMCAT_CONFIG_PATH
     chmod 755 $TOMCAT_CONFIG_PATH
 fi
-cat ./install/context_template.xml | sed "s|_SQL_HOST_|$SQL_HOST|g; s|_SQL_PORT_|$SQL_PORT|g; s|_SQL_BASE_|$SQL_BASE|g; s|_SQL_USER_|$SQL_USER|g; s|_SQL_PASS_|$SQL_PASS|g; s|_BASE_DIRECTORY_|$LOCATION|g; s|_PROTOCOL_|$PROTOCOL|g; s|_BASE_HOST_|$BASE_HOST|g; s|_BASE_DOMAIN_|$BASE_DOMAIN|g; s|_BASE_PATH_|$BASE_PATH|g; s|_INSTALL_FLAG_|$INSTALL_FLAG_FILE|g" > $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml
+cat ./install/context_template.xml | sed "s|_SQL_HOST_|$SQL_HOST|g; s|_SQL_PORT_|$SQL_PORT|g; s|_SQL_BASE_|$SQL_BASE|g; s|_SQL_USER_|$SQL_USER|g; s|_SQL_PASS_|$SQL_PASS|g; s|_BASE_DIRECTORY_|$LOCATION|g; s|_PROTOCOL_|$PROTOCOL|g; s|_BASE_HOST_|$BASE_HOST|g; s|_BASE_DOMAIN_|$BASE_DOMAIN|g; s|_BASE_PATH_|$BASE_PATH|g; s|_INSTALL_FLAG_|$INSTALL_FLAG_FILE|g; s|_SMTP_HOST_|$SMTP_HOST|g; s|_SMTP_PORT_|$SMTP_PORT|g; s|_SMTP_SSL_|$SMTP_SSL|g; s|_SMTP_STARTTLS_|$SMTP_STARTTLS|g; s|_SMTP_USERNAME_|$SMTP_USERNAME|g; s|_SMTP_PASSWORD_|$SMTP_PASSWORD|g; s|_SMTP_FROM_|$SMTP_FROM|g" > $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml
 if [ "$?" -ne 0 ]; then
     echo "Failed to create a Tomcat config file $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml!"
     exit 1
