@@ -1,72 +1,74 @@
-# headwind-mdm-docker
-Docker Build for Headwind MDM - a platform for corporate Android applications
+# Jfc Technologies MDM (Docker Setup)
 
-Headwind MDM is a Mobile Device Management platform for Android devices, designed for corporate app developers and IT managers.
+Docker build and deployment configuration for **Jfc Technologies MDM** (originally Headwind MDM) — a Mobile Device Management platform for Android devices designed for corporate app developers and IT managers.
 
-(c) 2020 h-mdm.com
+This setup is updated to use a modern `tomcat:8.5-jdk8` base image (Ubuntu 22.04 LTS) to resolve legacy repository errors, features automatic branding customizations to **Jfc Technologies MDM**, and supports local building out-of-the-box.
 
-[https://h-mdm.com](https://h-mdm.com)
+---
 
-## RUnning the Docker Container
+## Quick Start
 
+To build the image and start the container locally in the background:
+
+```bash
+docker-compose up -d --build
 ```
-docker-compose up -d
+
+The server will be accessible at: **[http://localhost:8080/hmdm/](http://localhost:8080/hmdm/)**
+* **Default Login**: `admin`
+* **Default Password**: `admin`
+
+---
+
+## How to Build and Push to Docker Hub
+
+If you want to build this MDM container and host it on your own Docker Hub repository, follow these steps:
+
+### 1. Build and Tag the Image
+Build the image locally and tag it with your Docker Hub username/repository name:
+
+```bash
+docker build -t <your-dockerhub-username>/jfc-hmdm:latest .
 ```
 
-#### Available environmental variables
+### 2. Log in to Docker Hub
+Authenticate with your Docker Hub credentials:
 
-- **HMDM_SQL_HOST**: PostgreSQL host (IP or URL) (Default: localhost)
-- **HMDM_SQL_PORT**: PostgreSQL port (Default: 5432)
-- **HMDM_SQL_BASE**: PostgreSQL database (Default: hmdm)
-- **HMDM_SQL_USER**: PostgreSQL username (Default: hmdm)
-- **HMDM_SQL_PASS**: PostgreSQL password
-- **HMDM_LANGUAGE**: Language (Default: en)
-- **HMDM_TOMCAT_PORTOCOL**: Tomcat HTTP Portocol (Options: http | https) (Default: http)
+```bash
+docker login
+```
 
-## Features
+### 3. Push the Image
+Push the image to your repository:
 
- - Enrollment to Android 7+ devices through scanning a QR-code
- - Work in "Application mode" without enrollment
- - Customize the mobile desktop design and available applications
- - Automatic deployment of applications through the web panel
- - Mobile device management: groups, configurations, device status
- - Setup the available mobile device capabilities (GPS, Wi-Fi, Bluetooth etc.)
- - Manage the automatic OS update mode on the mobile device
- - Extensible platform design allowing the custom plugin development
- - Collection of application logs in the web panel
- - Centralized configuration of corporate applications
+```bash
+docker push <your-dockerhub-username>/jfc-hmdm:latest
+```
 
-The *Enterprise edition* of the platform has more features:
+### 4. Update Docker Compose configuration
+Once pushed, update the `image` field in `docker-compose.yml` to point to your new image:
 
- - Restriction of mobile user functions ("kid's shell" for corporate users)
- - Disable to change the mobile device settings
- - Kiosk mode (COSU, single-task mode)
- - Sending images from mobile device to server
- - Cloud-based or self-hosted server setup
- - Premium support of enterprise users
- - Custom plugin development services
+```yaml
+version: '3.7'
 
-The enterprise edition may be ordered on the [project website](https://h-mdm.com).
+services:
+    mdm:
+        image: <your-dockerhub-username>/jfc-hmdm:latest
+        ports:
+            - 8080:8080
+```
 
-## Quick start
+---
 
-Headwind MDM control panel is cross-platform (it is written in Java and uses Tomcat web server). However the best OS for the deployment of Headwind MDM control panel is Ubuntu Linux. 
+## Configuration & Environment Variables
 
- - Clone the project and build it (see BUILD.txt for details)
- - Install the web panel to the server by using the installer script
- - Open the web panel and follow the hints to generate a QR code
- - Perform the factory reset on your Android device, tap 7 times on the welcome screen
- - Follow the instructions to scan a QR code and enroll the mobile agent
- 
-## Contributing
+The container runs Tomcat 8.5 and PostgreSQL 14. During the first container startup, it auto-configures the database, updates the UI branding, and configures the following environment variables:
 
-Headwind MDM is a platform making corporate app development easier. We are happy to get more powerful plugins related to mobile device management. 
-
-Please contact us on the [project website](https://h-mdm.com) if you'd like to:
-
- - develop a public plugin for Headwind MDM
- - suggest a feature
- - order the custom development
- - report a bug
-
-
+- **`HMDM_SQL_HOST`**: PostgreSQL database host (Default: `localhost`)
+- **`HMDM_SQL_PORT`**: PostgreSQL port (Default: `5432`)
+- **`HMDM_SQL_BASE`**: PostgreSQL database name (Default: `hmdm`)
+- **`HMDM_SQL_USER`**: PostgreSQL user (Default: `hmdm`)
+- **`HMDM_SQL_PASS`**: PostgreSQL password
+- **`HMDM_LANGUAGE`**: Default interface language (Default: `en`)
+- **`HMDM_TOMTCAT_PORTOCOL`**: Tomcat HTTP Protocol (`http` or `https`) (Default: `http`)
+- **`HMDM_LOCATION`**: Base directory on server to store uploaded app files (Default: `/opt/hmdm`)
