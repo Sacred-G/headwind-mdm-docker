@@ -1,3 +1,5 @@
 /docker-compose.override.yml
 hmdm-install/
 hmdm*.zip
+/hmdm-server/
+/hmdm-android/
