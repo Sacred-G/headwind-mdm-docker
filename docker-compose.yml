@@ -3,6 +3,6 @@ version: '3.7'
 services:
     mdm:
         build: .
-        image: hwind/hmdm
+        image: sgbouldin12/jfc-hmdm:latest
         ports:
             - 8080:8080
