@@ -27,9 +27,9 @@ sudo -u postgres psql -d hmdm -c "UPDATE userroles SET name = 'Observer', descri
 sudo -u postgres psql -d hmdm -c "UPDATE groups SET name = 'Default' WHERE id = '1';"
 sudo -u postgres psql -d hmdm -c "UPDATE configurations SET name = 'Default', description = 'Basic configuration for all devices' WHERE id = '1';"
 
-# Change branding to JFC Technologies
-sed -i "s/'app.name': 'Headwind MDM'/'app.name': 'JFC Technologies'/g" /usr/local/tomcat/webapps/hmdm/localization/en_US.js
-sudo -u postgres psql -d hmdm -c "UPDATE customers SET name = 'JFC Technologies' WHERE id = 1;"
+# Change branding to Jfc Technologies MDM
+sed -i "s/'app.name': 'Headwind MDM'/'app.name': 'Jfc Technologies MDM'/g" /usr/local/tomcat/webapps/hmdm/localization/en_US.js
+sudo -u postgres psql -d hmdm -c "UPDATE customers SET name = 'Jfc Technologies MDM' WHERE id = 1;"
 
 catalina.sh stop
 sleep 30
